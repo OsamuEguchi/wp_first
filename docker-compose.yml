@@ -1,0 +1,49 @@
+services:
+  wordpress:
+    image: wordpress
+    # image: wordpress:6.7.1-apache
+    restart: unless-stopped
+    container_name: wordpress    
+    ports:
+      - 8080:80
+      # - 21:21
+
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_USER: ${USER}
+      WORDPRESS_DB_PASSWORD: ${PASSWD}     
+      WORDPRESS_DB_NAME: wordpressdb
+    volumes:
+      # - ./html:/var/www/html
+      - wordpress3:/var/www/html      
+
+# docker exec -it wordpress chown -R www-data:www-data /var/www/html/wp-content
+# docker exec -it wordpress chmod -R 775 /var/www/html/wp-content
+
+
+
+  db:
+    image: mysql:8.0
+    restart: unless-stopped  
+    environment:
+      MYSQL_DATABASE: wordpressdb  
+      MYSQL_USER: ${USER}
+      MYSQL_PASSWORD: ${PASSWD}    
+      MYSQL_RANDOM_ROOT_PASSWORD: '1'
+    volumes:
+      - db3:/var/lib/mysql
+
+  phpmyadmin:
+    image: phpmyadmin
+    ports:
+      - 8443:80
+    environment:
+      - PMA_HOST=db  
+      - PMA_USER=${USER}
+      - PMA_PASSWORD=${PASSWD}
+
+      - PMA_ARBITRARY=1
+
+volumes:
+  wordpress3:
+  db3:
